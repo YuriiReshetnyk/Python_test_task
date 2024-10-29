@@ -53,7 +53,7 @@ How to run this app?
 1. **Clone the repository files to your computer:** 
   
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/YuriiReshetnyk/Python_test_task.git
    ```
    
 2. **Enter the folder of the repository:**
@@ -148,7 +148,7 @@ allows you to perform many other actions.
 Important
 -------
 
-Since random-data-api.com always returns random 
+Since [Random Data API](https://random-data-api.com/) always returns random 
 values, regardless of the specified URL 
 parameters, I created a user task that not 
 only fetches and saves user data but also 
