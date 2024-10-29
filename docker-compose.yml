@@ -1,0 +1,80 @@
+
+
+services:
+  app:
+    container_name: app
+    build:
+      context: ./app
+      args:
+        - DEV=${DEV}
+    ports:
+      - "8001:8000"
+    command: ["/usr/src/app/script.sh"]
+    environment:
+      - DB_HOST=db
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+      - SECRET_KEY=${SECRET_KEY}
+      - DEV=${DEV}
+    depends_on:
+      - db
+
+  celery_beat:
+    container_name: celery_beat
+    build:
+      context: ./app
+      args:
+        - DEV=${DEV}
+    command: ["/bin/sh", "-c", "/usr/src/app/celery.sh && celery -A app beat -l INFO"]
+    environment:
+      - DB_HOST=db
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+      - SECRET_KEY=${SECRET_KEY}
+      - DEV=${DEV}
+    depends_on:
+      - db
+      - rabbitmq
+
+  celery_worker:
+    container_name: celery_worker
+    build:
+      context: ./app
+      args:
+        - DEV=${DEV}
+    command: ["/bin/sh", "-c", "/usr/src/app/celery.sh && celery -A app worker -Q random_data_api -l INFO --concurrency=1"]
+    environment:
+      - DB_HOST=db
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+      - SECRET_KEY=${SECRET_KEY}
+      - DEV=${DEV}
+    depends_on:
+      - db
+      - rabbitmq
+
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq
+
+
+  db:
+    container_name: postgres
+    image: postgres:15-alpine
+    volumes:
+      - dev-db-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: user_db
+      POSTGRES_USER: postgres_user
+      POSTGRES_PASSWORD: password123
+    ports:
+      - "5432:5432"
+
+volumes:
+  dev-db-data:
