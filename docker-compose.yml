@@ -9,7 +9,16 @@ services:
         - DEV=${DEV}
     ports:
       - "8001:8000"
-    command: ["/usr/src/app/script.sh"]
+    command: >
+      sh -c "
+      echo 'Waiting for database...' &&
+      python manage.py wait_for_db &&
+      echo 'Apply database migrations' &&
+      python manage.py migrate &&
+      echo 'Create default superuser' &&
+      python manage.py create_default_superuser &&
+      echo 'Start the server' &&
+      python manage.py runserver 0.0.0.0:8000"
     environment:
       - DB_HOST=db
       - DB_NAME=${DB_NAME}
@@ -27,7 +36,13 @@ services:
       context: ./app
       args:
         - DEV=${DEV}
-    command: ["/bin/sh", "-c", "/usr/src/app/celery.sh && celery -A app beat -l INFO"]
+    command: >
+      sh -c "
+      echo 'Waiting for database...' &&
+      python manage.py wait_for_db &&
+      echo 'Waiting 30 seconds for migrations to be applied' &&
+      sleep 30 &&
+      celery -A app beat -l INFO"
     environment:
       - DB_HOST=db
       - DB_NAME=${DB_NAME}
@@ -46,7 +61,13 @@ services:
       context: ./app
       args:
         - DEV=${DEV}
-    command: ["/bin/sh", "-c", "/usr/src/app/celery.sh && celery -A app worker -Q random_data_api -l INFO --concurrency=1"]
+    command: >
+      sh -c "
+      echo 'Waiting for database...' &&
+      python manage.py wait_for_db &&
+      echo 'Waiting 30 seconds for migrations to be applied' &&
+      sleep 30 &&
+      celery -A app worker -Q random_data_api -l INFO --concurrency=1"
     environment:
       - DB_HOST=db
       - DB_NAME=${DB_NAME}

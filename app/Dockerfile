@@ -6,7 +6,7 @@ ENV PYTHONUNBUFFERED 1
 
 WORKDIR /usr/src/app
 
-COPY . .
+COPY . /usr/src/app/
 
 ARG DEV=false
 RUN python -m venv /py && \
