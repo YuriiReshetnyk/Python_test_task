@@ -40,10 +40,10 @@ After starting the application, a default superuser will be created with the fol
 
 **Warning**: This password is weak. 
 If you prefer not to have a superuser with these credentials, 
-please remove the following lines from the `script.sh` file:  
+please remove the following lines (**18** and **19**) from the `docker-compose.yml` file:  
    ```
-   echo "Create default superuser"
-   python manage.py create_default_superuser
+   echo 'Create default superuser' &&
+   python manage.py create_default_superuser &&
    ```
 
 How to run this app?
@@ -62,10 +62,10 @@ How to run this app?
    cd Python_test_task
    ```
 
-3. **Create and Fill in the `.env` File:**
-   
-   Create a file named `.env` in the root of your project and include the following environment variables:
-
+3. **Change values in the `.env` File:**  
+The `.env` file contains essential environment variables. 
+You can modify these values to your preference or keep 
+the defaults provided in the example.
    ```plaintext
    # Development settings
    DEV=true
